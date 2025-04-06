@@ -103,18 +103,16 @@ function deletecheck(event){
 
 
 // Saving to local storage:
-function savelocal(todo){
-    //Check: if item/s are there;
-    let todos;
-    if(localStorage.getItem('todos') === null) {
-        todos = [];
-    }
-    else {
-        todos = JSON.parse(localStorage.getItem('todos'));
-    }
+function savelocal(todoText) {
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-    todos.push(todo);
-    localStorage.setItem('todos', JSON.stringify(todos));
+    const newTodo = {
+        text: todoText,
+        completed: false  // Başlangıçta tamamlanmamış olarak kaydedilir
+    };
+
+    todos.push(newTodo);
+    localStorage.setItem('todos', JSON.stringify(todos));  // Yeni todos verisini kaydet
 }
 
 
