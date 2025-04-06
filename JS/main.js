@@ -120,15 +120,15 @@ function savelocal(todo){
 
 
 function getTodos() {
-    //Check: if item/s are there;
+    // Check: if item/s are there;
     let todos;
     if(localStorage.getItem('todos') === null) {
         todos = [];
-    }
-    else {
+    } else {
         todos = JSON.parse(localStorage.getItem('todos'));
     }
 
+    // Loop through each todo item and create HTML elements
     todos.forEach(function(todo) {
         // toDo DIV;
         const toDoDiv = document.createElement("div");
@@ -136,26 +136,73 @@ function getTodos() {
 
         // Create LI
         const newToDo = document.createElement('li');
-        
-        newToDo.innerText = todo;
+        newToDo.innerText = todo.text;  // `text` kaydedildiği için burada text kullanıyoruz
         newToDo.classList.add('todo-item');
+        if (todo.completed) {
+            newToDo.classList.add('completed');  // Eğer tamamlanmışsa, 'completed' sınıfı eklenir
+        }
         toDoDiv.appendChild(newToDo);
 
-        // check btn;
+        // Check button (check-btn or standard-button)
         const checked = document.createElement('button');
         checked.innerHTML = '<i class="fas fa-check"></i>';
-        checked.classList.add("check-btn", `${savedTheme}-button`);
+        checked.classList.add(todo.completed ? 'standard-button' : 'check-btn', `${savedTheme}-button`);
+        // Add click event to toggle completion status
+        checked.addEventListener('click', function() {
+            toggleCheckStatus(checked, newToDo, todo.text);  // Durumu değiştirme fonksiyonunu çağırıyoruz
+        });
         toDoDiv.appendChild(checked);
-        // delete btn;
+
+        // Delete button
         const deleted = document.createElement('button');
         deleted.innerHTML = '<i class="fas fa-trash"></i>';
         deleted.classList.add("delete-btn", `${savedTheme}-button`);
+        // Add click event to delete todo
+        deleted.addEventListener('click', function() {
+            deleteTodo(todo.text, toDoDiv);  // Todo öğesini silme fonksiyonunu çağırıyoruz
+        });
         toDoDiv.appendChild(deleted);
 
         // Append to list;
         toDoList.appendChild(toDoDiv);
     });
 }
+
+// Toggle between check-btn and standard-button, update status
+function toggleCheckStatus(button, todoElement, todoText) {
+    if (button.classList.contains('check-btn')) {
+        button.classList.remove('check-btn');
+        button.classList.add('standard-button');
+        todoElement.classList.add('completed');  // Todo'yu tamamlandı olarak işaretle
+    } else {
+        button.classList.remove('standard-button');
+        button.classList.add('check-btn');
+        todoElement.classList.remove('completed');  // Todo'yu tamamlanmamış olarak işaretle
+    }
+    updateTodoInLocalStorage(todoText, todoElement.classList.contains('completed'));
+}
+
+// Update the todo in localStorage after toggling completion
+function updateTodoInLocalStorage(todoText, isCompleted) {
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+    const todoIndex = todos.findIndex(todo => todo.text === todoText);
+
+    if (todoIndex !== -1) {
+        todos[todoIndex].completed = isCompleted;  // Güncellenmiş durumu kaydet
+        localStorage.setItem('todos', JSON.stringify(todos));  // Güncellenmiş todos verisini kaydet
+    }
+}
+
+// Delete todo from localStorage
+function deleteTodo(todoText, todoElement) {
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+    todos = todos.filter(todo => todo.text !== todoText);  // Silinen öğeyi todos dizisinden kaldır
+    localStorage.setItem('todos', JSON.stringify(todos));  // Güncellenmiş todos verisini kaydet
+
+    // Silinen todo öğesini DOM'dan kaldır
+    todoElement.remove();
+}
+
 
 
 function removeLocalTodos(todo){
