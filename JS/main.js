@@ -35,7 +35,7 @@ function addToDo(event) {
     // Create LI
     const newToDo = document.createElement('li');
     if (toDoInput.value === '') {
-            alert("You must write something!");
+            alert("Mal mısın bişey yazsana");
         } 
     else {
         // newToDo.innerText = "hey";
@@ -50,6 +50,11 @@ function addToDo(event) {
         const checked = document.createElement('button');
         checked.innerHTML = '<i class="fas fa-check"></i>';
         checked.classList.add('check-btn', `${savedTheme}-button`);
+        toDoDiv.appendChild(checked);
+        checked.addEventListener('click', function() {
+        toggleCheckStatus(checked, newToDo);  // Check durumunu değiştir
+        });
+
         toDoDiv.appendChild(checked);
         // delete btn;
         const deleted = document.createElement('button');
